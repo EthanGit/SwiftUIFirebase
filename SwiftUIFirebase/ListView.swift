@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct ListView: View {
+    
+    private let viewModel = ListViewModel()
+    
     var body: some View {
         VStack(spacing: 0) {
             // Cards
@@ -27,8 +30,9 @@ struct ListView: View {
 extension ListView {
     private var cards: some View {
         ZStack {
-            ForEach(0..<1) { _ in
-                CardView()
+            ForEach(viewModel.users.reversed()) { user in
+                CardView(user: user) { isRedo in viewModel.adjustIndex(isRedo: isRedo)
+                }
             }
         }
     }
@@ -36,7 +40,7 @@ extension ListView {
     private var actions: some View {
         HStack(spacing: 68) {
             Button {
-                
+                viewModel.nopeButtonTapped()
             } label: {
                 Image(systemName: "xmark")
                     .font(.system(size: 26, weight: .bold))
@@ -49,7 +53,7 @@ extension ListView {
             }
 
             Button {
-                
+                viewModel.redoButtonTapped()
             } label: {
                 Image(systemName: "arrow.counterclockwise")
                     .font(.system(size: 26, weight: .bold))
@@ -62,7 +66,7 @@ extension ListView {
             }
             
             Button {
-                
+                viewModel.likeButtonTapped()
             } label: {
                 Image(systemName: "heart")
                     .font(.system(size: 26, weight: .bold))
