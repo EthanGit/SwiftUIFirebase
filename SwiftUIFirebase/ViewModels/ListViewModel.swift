@@ -36,28 +36,18 @@ class ListViewModel {
             currentIndex += 1
         }
     }
-    
-    func nopeButtonTapped() {
-        if currentIndex >= users.count { return }
         
-        NotificationCenter.default.post(name: NSNotification.Name("NOPEACTION"), object: nil, userInfo: [
-            "id": users[currentIndex].id
-        ])
-    }
-    
-    func likeButtonTapped() {
-        if currentIndex >= users.count { return }
+    func tappedHandler(action: Action) {
+        switch action {
+        case .nope , .like:
+            if currentIndex >= users.count { return }
+        case .redo:
+            if currentIndex <= 0 { return }
+        }
         
-        NotificationCenter.default.post(name: NSNotification.Name("LIKEACTION"), object: nil, userInfo: [
-            "id": users[currentIndex].id
-        ])
-    }
-    
-    func redoButtonTapped() {
-        if currentIndex <= 0 { return }
-        
-        NotificationCenter.default.post(name: NSNotification.Name("REDOACTION"), object: nil, userInfo: [
-            "id": users[currentIndex - 1].id
+        NotificationCenter.default.post(name: NSNotification.Name("ACTIONFROMBUTTON"), object: nil, userInfo: [
+            "id": action == .redo ? users[currentIndex - 1].id : users[currentIndex].id,
+            "action": action
         ])
     }
 }

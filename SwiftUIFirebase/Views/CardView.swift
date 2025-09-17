@@ -32,35 +32,8 @@ struct CardView: View {
         .gesture(gesture)
         .scaleEffect(scale)
         .rotationEffect(.degrees(angle))
-        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("NOPEACTION"), object: nil)) { data in
-            guard
-                let info = data.userInfo,
-                let id = info["id"] as? String
-            else { return }
-            
-            if id == user.id {
-                removeCard(isLiked: false)
-            }
-        }
-        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("LIKEACTION"), object: nil)) { data in
-            guard
-                let info = data.userInfo,
-                let id = info["id"] as? String
-            else { return }
-            
-            if id == user.id {
-                removeCard(isLiked: true)
-            }
-        }
-        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("REDOACTION"), object: nil)) { data in
-            guard
-                let info = data.userInfo,
-                let id = info["id"] as? String
-            else { return }
-            
-            if id == user.id {
-                resetCard()
-            }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("ACTIONFROMBUTTON"), object: nil)) { data in
+            receiveHandler(data: data)
         }
     }
 }
@@ -103,37 +76,13 @@ extension CardView {
     private var LikeAndNope: some View {
         HStack {
             Text("LIKE")
-                .tracking(4)
-                .foregroundStyle(.green)
-                .font(.system(size:50))
-                .fontWeight(.heavy)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 2)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(.green, lineWidth: 5)
-                    
-                )
-                .rotationEffect(Angle(degrees: -15))
-                .offset(x: 16, y: 30)
+                .likeNopeText(isLike: true)
                 .opacity(opacity)
             
             Spacer()
             
             Text("NOPE")
-                .tracking(4)
-                .foregroundStyle(.red)
-                .font(.system(size:50))
-                .fontWeight(.heavy)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 2)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(.red, lineWidth: 5)
-                    
-                )
-                .rotationEffect(Angle(degrees: 15))
-                .offset(x: -16, y: 36)
+                .likeNopeText(isLike: false)
                 .opacity(-opacity)
         }
         .frame(maxHeight: .infinity, alignment: .top)
@@ -195,4 +144,24 @@ extension CardView {
                 }
             }
     }
+    
+    private func receiveHandler(data: NotificationCenter.Publisher.Output) {
+        guard
+            let info = data.userInfo,
+            let id = info["id"] as? String,
+            let action = info["action"] as? Action
+        else { return }
+        
+        if id == user.id {
+            switch action {
+            case .nope:
+                removeCard(isLiked: false)
+            case .redo:
+                resetCard()
+            case .like:
+                removeCard(isLiked: true)
+            }
+        }
+    }
+    
 }
