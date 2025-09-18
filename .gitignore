@@ -30,3 +30,4 @@ fastlane/screenshots
 *.xcuserstate
 *.moved-aside
 .DS_Store
+GoogleService-Info.plist
