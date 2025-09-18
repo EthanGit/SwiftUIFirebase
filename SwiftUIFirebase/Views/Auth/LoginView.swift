@@ -9,6 +9,7 @@ import SwiftUI
 
 struct LoginView: View {
     
+    let authViewModel: AuthViewModel
     @State private var email: String = ""
     @State private var password: String = ""
 
@@ -26,7 +27,9 @@ struct LoginView: View {
                 
                 // Button
                 BasicButton(label: "ログイン", icon: "arrow.right") {
-                    print("ログインボタンがタップされました")
+                    Task {
+                        await authViewModel.login(email: email, password: password)
+                    }
                 }
                 .padding(.top, 24)
                 
@@ -34,7 +37,7 @@ struct LoginView: View {
                 
                 // Navidation
                 NavigationLink {
-                    RegistrationView()
+                    RegistrationView(authViewModel: authViewModel)
                         .navigationBarBackButtonHidden()
                 } label: {
                     HStack {
@@ -52,5 +55,5 @@ struct LoginView: View {
 }
 
 #Preview {
-    LoginView()
+    LoginView(authViewModel: AuthViewModel())
 }

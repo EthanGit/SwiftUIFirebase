@@ -9,6 +9,8 @@ import SwiftUI
 
 struct RegistrationView: View {
     
+    let authViewModel: AuthViewModel
+    
     @State private var email: String = ""
     @State private var name: String = ""
     @State private var age = 18
@@ -54,7 +56,9 @@ struct RegistrationView: View {
             
             // Button
             BasicButton(label: "登録", icon: "arrow.right") {
-                print("登録ボタンをタップしました")
+                Task {
+                    await authViewModel.createAccount(email: email, password: password)
+                }
             }
             .padding(.top, 24)
 
@@ -78,5 +82,5 @@ struct RegistrationView: View {
 }
 
 #Preview {
-    RegistrationView()
+    RegistrationView(authViewModel: AuthViewModel())
 }
