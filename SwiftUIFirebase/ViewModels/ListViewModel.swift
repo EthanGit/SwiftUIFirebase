@@ -6,15 +6,20 @@
 //
 
 import Foundation
+import FirebaseFirestore
 
-class ListViewModel {
+class ListViewModel: ObservableObject {
     
-    var users: [User] = []
+    @Published var users: [User] = []
     
     private var currentIndex: Int = 0
     
+    @MainActor
     init() {
-        self.users = getMockUsers()
+        // self.users = getMockUsers()
+        Task {
+            self.users = await fetchUsers()
+        }
     }
     
     private func getMockUsers() -> [User] {
@@ -27,6 +32,23 @@ class ListViewModel {
             .MOCK_USER6,
             .MOCK_USER7
         ]
+    }
+    
+    // Download User Data
+    private func fetchUsers() async -> [User] {
+        do {
+            let snapshot = try await Firestore.firestore().collection("users").getDocuments()
+            
+            var tempUsers = [User]()
+            for document in snapshot.documents {
+                let user = try document.data(as: User.self)
+                tempUsers.append(user)
+            }
+            return tempUsers
+        } catch {
+            print("ユーザーデータ取得に失敗: \(error.localizedDescription)")
+            return []
+        }
     }
     
     func adjustIndex(isRedo: Bool) {
