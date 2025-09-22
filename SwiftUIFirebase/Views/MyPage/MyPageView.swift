@@ -11,6 +11,7 @@ struct MyPageView: View {
     
     @EnvironmentObject var authViewModel: AuthViewModel
     @State private var showEditProfileView = false
+    @State private var showDeleteAlert = false
     
     var body: some View {
         List {
@@ -38,11 +39,18 @@ struct MyPageView: View {
                 }
                 
                 Button {
-                    
+                    showDeleteAlert = true
                 } label: {
                     MyPageRow(iconName: "xmark.circle.fill", label: "アカウント削除", tintColor: .red)
                 }
-
+                .alert("アカウント削除", isPresented: $showDeleteAlert) {
+                    Button("キャンセル") {}
+                    Button("削除") {
+                        Task { await authViewModel.deleteAccount() }
+                    }
+                } message: {
+                    Text("アカウントを本当に削除しますか？")
+                }
             }
             
         }

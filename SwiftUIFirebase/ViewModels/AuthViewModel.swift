@@ -51,9 +51,7 @@ class AuthViewModel: ObservableObject {
         do {
             try Auth.auth().signOut()
             print("ログアウト成功")
-            self.userSession = nil
-            self.currentUser = nil
-            self.profiledImage = nil
+            self.resetAccount()
         } catch {
             print("ログアウト失敗: \(error.localizedDescription)")
         }
@@ -77,6 +75,26 @@ class AuthViewModel: ObservableObject {
     }
     
     // Delete Account
+    @MainActor
+    func deleteAccount() async {
+        guard let id = self.userSession?.uid else { return }
+        
+        do {
+            try await Auth.auth().currentUser?.delete()
+            try await Firestore.firestore().collection("users").document(id).delete()
+            print("アカウント削除成功")
+            self.resetAccount()
+        } catch {
+            print("アカウント削除失敗: \(error.localizedDescription)")
+        }
+    }
+    
+    // Reset Account
+    private func resetAccount() {
+        self.userSession = nil
+        self.currentUser = nil
+        self.profiledImage = nil
+    }
     
     // Upload User Data
     private func uploadUserData(withUser user: User) async {
