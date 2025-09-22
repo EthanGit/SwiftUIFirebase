@@ -39,6 +39,8 @@ class AuthViewModel: ObservableObject {
             print("ログイン成功: \(result.user.email)")
             self.userSession = result.user
             print("self.userSession：\(self.userSession?.email)")
+            
+            await self.fetchCurrentUser()
         } catch {
             print("ログイン失敗: \(error.localizedDescription)")
         }
@@ -50,6 +52,8 @@ class AuthViewModel: ObservableObject {
             try Auth.auth().signOut()
             print("ログアウト成功")
             self.userSession = nil
+            self.currentUser = nil
+            self.profiledImage = nil
         } catch {
             print("ログアウト失敗: \(error.localizedDescription)")
         }
@@ -65,6 +69,8 @@ class AuthViewModel: ObservableObject {
             
             let newUser = User(id: result.user.uid, name: name, email: email, age: age)
             await uploadUserData(withUser: newUser)
+            
+            await self.fetchCurrentUser()
         } catch {
             print("ユーザー作成に失敗: \(error.localizedDescription)")
         }

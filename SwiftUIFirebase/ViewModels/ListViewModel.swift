@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import FirebaseAuth
 import FirebaseFirestore
 
 class ListViewModel: ObservableObject {
@@ -36,14 +37,20 @@ class ListViewModel: ObservableObject {
     
     // Download User Data
     private func fetchUsers() async -> [User] {
+        guard let currentUid = Auth.auth().currentUser?.uid else { return [] }
+        
         do {
             let snapshot = try await Firestore.firestore().collection("users").getDocuments()
             
             var tempUsers = [User]()
             for document in snapshot.documents {
                 let user = try document.data(as: User.self)
-                tempUsers.append(user)
+                
+                if user.id != currentUid {
+                    tempUsers.append(user)
+                }
             }
+            
             return tempUsers
         } catch {
             print("ユーザーデータ取得に失敗: \(error.localizedDescription)")
