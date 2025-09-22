@@ -31,3 +31,4 @@ fastlane/screenshots
 *.moved-aside
 .DS_Store
 GoogleService-Info.plist
+Secrets.plist

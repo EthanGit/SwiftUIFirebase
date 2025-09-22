@@ -44,6 +44,7 @@
 			isa = PBXGroup;
 			children = (
 				D656898B2E71480700D3ED21 /* SwiftUIFirebase */,
+				D69386AA2E8128530029379C /* Frameworks */,
 				D656898A2E71480700D3ED21 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -54,6 +55,13 @@
 				D65689892E71480700D3ED21 /* SwiftUIFirebase.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		D69386AA2E8128530029379C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

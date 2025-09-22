@@ -5,14 +5,22 @@
 //  Created by Ethan Lin on 2025/9/18.
 //
 
-import Foundation
+import SwiftUI
+import PhotosUI
 import FirebaseAuth
 import FirebaseFirestore
+import FirebaseStorage
 
 class AuthViewModel: ObservableObject {
     
     @Published var userSession: FirebaseAuth.User?
     @Published var currentUser: User?
+    @Published var selectedImage: PhotosPickerItem? {
+        didSet {
+            Task { await loadImage() }
+        }
+    }
+    @Published var profiledImage: UIImage?
     
     init() {
         self.userSession = Auth.auth().currentUser
@@ -91,11 +99,15 @@ class AuthViewModel: ObservableObject {
     
     // Update user profile
     func updateUserProfile(withId id: String, name: String, age: Int, message: String) async {
-        let data: [AnyHashable: Any] = [
+        var data: [AnyHashable: Any] = [
             "name": name,
             "age": age,
             "message": message
         ]
+        
+        if let urlString =  await uploadImage() {
+            data["photoUrl"] = urlString
+        }
         
         do {
             try await Firestore.firestore().collection("users").document(id).updateData(data)
@@ -103,6 +115,39 @@ class AuthViewModel: ObservableObject {
             await self.fetchCurrentUser()
         } catch {
             print("プロフィール更新失敗: \(error.localizedDescription)")
+        }
+    }
+    
+    // Load image
+    @MainActor
+    private func loadImage() async {
+        guard let image = selectedImage else { return }
+        
+        do {
+            guard let data = try await image.loadTransferable(type: Data.self) else { return }
+            self.profiledImage = UIImage(data: data)
+        } catch {
+            print("参照データのロード失敗: \(error.localizedDescription)")
+        }
+    }
+    
+    // Upload image data to FireStorage
+    private func uploadImage() async -> String? {
+        let filename = NSUUID().uuidString
+        let storageRef = Storage.storage().reference(withPath: "/user_images/\(filename)")
+        
+        guard let uiImage = self.profiledImage else { return nil }
+        guard let imageData = uiImage.jpegData(compressionQuality: 0.5) else { return nil }
+        
+        do {
+            let _ = try await storageRef.putDataAsync(imageData)
+            print("画像アップロード成功")
+            
+            let urlString = try await storageRef.downloadURL().absoluteString
+            return urlString
+        } catch {
+            print("画像アップロード失敗: \(error.localizedDescription)")
+            return nil
         }
     }
 }

@@ -45,11 +45,24 @@ struct CardView: View {
 // MARK: - UI
 extension CardView {
     private var imageLayer: some View {
-        Image(systemName: user.photoUrl ?? "figure.fall")
-            .resizable()
-            .aspectRatio(contentMode: .fill)
-            .background(Color(red: 0.9, green: 0.9, blue: 0.9))
-            .frame(width: 100)
+        Group {
+            if let urlString = user.photoUrl, let url = URL(string: urlString) {
+                AsyncImage(url: url) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: screenWidth - 16)
+                } placeholder: {
+                    ProgressView()
+                }
+            } else {
+                Image("avatar")
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .background(Color(red: 0.9, green: 0.9, blue: 0.9))
+                    .frame(width: 100)
+            }
+        }
     }
     
     private var informationLayer: some View {
