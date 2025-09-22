@@ -17,7 +17,7 @@ struct LoginView: View {
         NavigationStack {
             VStack {
                 // Image
-                BrandImage()
+                BrandImage(size: .large)
                 
                 // Form
                 VStack(spacing: 24) {
