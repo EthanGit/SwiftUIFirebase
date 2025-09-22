@@ -26,7 +26,9 @@ struct BasicButton: View {
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
             .foregroundColor(.white)
-            .background(Color.blue)
+            .background(
+                .linearGradient(colors: [.brandColorLight, .brandColorDark], startPoint: .topTrailing, endPoint: .bottomLeading)
+            )
             .cornerRadius(8)
         }
     }

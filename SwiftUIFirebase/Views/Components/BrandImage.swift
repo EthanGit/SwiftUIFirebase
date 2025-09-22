@@ -17,12 +17,16 @@ struct BrandImage: View {
     let size: BrandImageSize
         
     var body: some View {
-        Image(systemName: "person.circle.fill")
-            .resizable()
-            .scaledToFill()
-            .foregroundStyle(.red)
-            .frame(width: size.rawValue, height: size.rawValue)
-            .padding(.vertical, 32)
+        LinearGradient(
+            colors: [.brandColorLight, .brandColorDark],
+            startPoint: .topTrailing,
+            endPoint: .bottomLeading)
+        .mask {
+            Image(systemName: "person.circle.fill")
+                .resizable()
+                .scaledToFit()
+        }
+        .frame(width: size.rawValue, height: size.rawValue)
     }
 }
 

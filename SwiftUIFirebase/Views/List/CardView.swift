@@ -129,11 +129,11 @@ extension CardView {
         adjustIndex(false)
     }
     
-    private func resetCard() {
+    private func resetCard(fromButton: Bool = false) {
         withAnimation(.smooth) {
             offset = .zero
         }
-        adjustIndex(true)
+        if fromButton { adjustIndex(true) }
     }
     
     private var gesture: some Gesture {
@@ -170,7 +170,7 @@ extension CardView {
             case .nope:
                 removeCard(isLiked: false)
             case .redo:
-                resetCard()
+                resetCard(fromButton: true)
             case .like:
                 removeCard(isLiked: true)
             }
