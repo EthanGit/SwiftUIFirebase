@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MyPageView: View {
     
+    @EnvironmentObject var authViewModel: AuthViewModel
     @State private var showEditProfileView = false
     
     var body: some View {
@@ -31,7 +32,7 @@ struct MyPageView: View {
                 }
                 
                 Button {
-                    
+                    authViewModel.logout()
                 } label: {
                     MyPageRow(iconName: "arrow.left.circle.fill", label: "ログアウト", tintColor: .red)
                 }
@@ -67,11 +68,11 @@ extension MyPageView {
                     .clipShape(Circle())
                 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("ブルー")
+                    Text(authViewModel.currentUser?.name ?? "")
                         .font(.subheadline)
                         .fontWeight(.bold)
                     
-                    Text("cc.dd@example.com")
+                    Text(authViewModel.currentUser?.email ?? "")
                         .font(.footnote)
                         .tint(.gray)
                 }

@@ -9,7 +9,8 @@ import SwiftUI
 
 struct LoginView: View {
     
-    let authViewModel: AuthViewModel
+//    let authViewModel: AuthViewModel
+    @EnvironmentObject var authViewModel: AuthViewModel
     @State private var email: String = ""
     @State private var password: String = ""
 
@@ -37,7 +38,7 @@ struct LoginView: View {
                 
                 // Navidation
                 NavigationLink {
-                    RegistrationView(authViewModel: authViewModel)
+                    RegistrationView()
                         .navigationBarBackButtonHidden()
                 } label: {
                     HStack {
@@ -55,5 +56,5 @@ struct LoginView: View {
 }
 
 #Preview {
-    LoginView(authViewModel: AuthViewModel())
+    LoginView()
 }

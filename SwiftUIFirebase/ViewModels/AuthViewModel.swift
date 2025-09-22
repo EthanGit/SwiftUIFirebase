@@ -12,10 +12,15 @@ import FirebaseFirestore
 class AuthViewModel: ObservableObject {
     
     @Published var userSession: FirebaseAuth.User?
+    @Published var currentUser: User?
     
     init() {
         self.userSession = Auth.auth().currentUser
         print("ログインユーザー：\(self.userSession?.email ?? "empty user")")
+        
+        Task {
+            await self.fetchCurrentUser()
+        }
     }
     
     // Login
@@ -67,6 +72,37 @@ class AuthViewModel: ObservableObject {
             print("データ保存成功")
         } catch {
             print("データ保存失敗: \(error.localizedDescription)")
+        }
+    }
+    
+    // Fetch current user
+    @MainActor
+    private func fetchCurrentUser() async {
+        guard let uid = self.userSession?.uid else { return }
+        
+        do {
+            let snapshot = try await Firestore.firestore().collection("users").document(uid).getDocument()
+            self.currentUser = try snapshot.data(as: User.self)
+            print("カレントユーザー取得成功: \(self.currentUser)")
+        } catch {
+            print("カレントユーザー取得失敗: \(error.localizedDescription)")
+        }
+    }
+    
+    // Update user profile
+    func updateUserProfile(withId id: String, name: String, age: Int, message: String) async {
+        let data: [AnyHashable: Any] = [
+            "name": name,
+            "age": age,
+            "message": message
+        ]
+        
+        do {
+            try await Firestore.firestore().collection("users").document(id).updateData(data)
+            print("プロフィール更新成功")
+            await self.fetchCurrentUser()
+        } catch {
+            print("プロフィール更新失敗: \(error.localizedDescription)")
         }
     }
 }
